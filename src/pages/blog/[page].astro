@@ -1,0 +1,30 @@
+---
+export const prerender = true;
+import fetchApi from '../../lib/strapi';
+import Layout from '../../layouts/Layout.astro';
+export async function getStaticPaths({ paginate }) {
+  const response = await fetchApi({
+    endpoint: 'blogs',
+    wrappedByKey: 'data',
+  });
+  const articles = response;
+  return paginate(articles, { pageSize: 2 });
+}
+const { page } = Astro.props;
+console.log(page);
+---
+
+<Layout>
+  <h1>Page {page.currentPage}</h1>
+  <ul>
+    {
+      page.data.map((article) => (
+        <li>
+          <a href={`/blog/${article.attributes.slug}/`}>{article.attributes.title}</a>
+        </li>
+      ))
+    }
+  </ul>
+  {page.url.prev ? <a href={page.url.prev}>Previous Page</a> : null} |
+  {page.url.next ? <a href={page.url.next}>Next Page</a> : null}
+</Layout>

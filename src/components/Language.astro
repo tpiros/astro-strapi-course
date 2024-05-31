@@ -1,0 +1,35 @@
+---
+const { currentPage, pageSize, totalItems } = Astro.props;
+
+const totalPages = Math.ceil(totalItems / pageSize);
+
+const getPageUrl = (page: number) => {
+  const url = new URL(Astro.request.url);
+  url.searchParams.set('page', page.toString());
+  return url.toString();
+};
+---
+
+{
+  totalPages > 1 && (
+    <nav aria-label="Pagination">
+      <ul class="flex justify-center gap-2">
+        {Array.from({ length: totalPages }, (_, index) => index + 1).map((page) => (
+          <li>
+            <a
+              href={getPageUrl(page)}
+              aria-current={page === currentPage ? 'page' : undefined}
+              class={`px-3 py-2 rounded ${
+                page === currentPage
+                  ? 'bg-blue-500 text-white'
+                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+              }`}
+            >
+              {page}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  )
+}
